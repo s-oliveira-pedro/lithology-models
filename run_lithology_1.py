@@ -16,6 +16,9 @@ from landlab import RasterModelGrid
 from landlab.components import FlowAccumulator, FastscapeEroder, LinearDiffuser, Lithology, LithoLayers
 from landlab.plot import imshow_grid
 
+
+
+
 dx= 100
 basin_mg = RasterModelGrid((150,150),dx)
 
