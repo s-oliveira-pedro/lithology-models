@@ -1,3 +1,4 @@
+
 def angle_between_plane_and_horizontal(A, B, C):
     """ Function to calculate the angle between the plane and the horizontal plane
 
@@ -29,7 +30,7 @@ def angle_between_plane_and_horizontal(A, B, C):
 
     return theta_degrees
 
-A, B, C, D = 0.7, 0, 1, 0
+A, B, C, D = 5, 0, 1, 0
 
 angle = angle_between_plane_and_horizontal(A, B, C)
 print(f"The angle between the plane and the horizontal plane is {angle:.2f} degrees")
