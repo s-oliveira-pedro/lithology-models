@@ -1,3 +1,4 @@
+
 def visualize_plan(a,b,c,d):
     import numpy as np
     import plotly.graph_objs as go
@@ -56,3 +57,9 @@ def visualize_plan(a,b,c,d):
     # Display the plot in the default web browser
     fig.show()
 
+a = 1
+b = 0.24
+c = 1
+d = 0
+
+visualize_plan(a,b,c,d)
