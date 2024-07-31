@@ -1,23 +1,12 @@
-import warnings
-warnings.filterwarnings('ignore')
-from litholayers_module import Litho_models
-
 import os
 import numpy as np
-import xarray as xr
-import dask
-
-import matplotlib
 import matplotlib.pyplot as plt
-
-import holoviews as hv
-hv.extension('matplotlib')
-
 from landlab import RasterModelGrid
 from landlab.components import FlowAccumulator, FastscapeEroder, LinearDiffuser, Lithology, LithoLayers
 from landlab.plot import imshow_grid
+from litholayers_module import Litho_models
 
-dx= 100
+dx=50
 basin_mg = RasterModelGrid((250,250),dx)
 
 folder_path = '/Users/poliveira/Library/CloudStorage/OneDrive-CityUniversityofNewYork/PhD_LIFE/PhD_2nd_Chapter/model_equi'
@@ -26,30 +15,31 @@ file_name = 'model_equi100000years.txt'
 file_path = os.path.join(folder_path, file_name)
 
 basin_mg.at_node['topographic__elevation'] = np.loadtxt(file_path)
+basin_mg.set_closed_boundaries_at_grid_edges(True, True, False, True)
 
 z = basin_mg.at_node['topographic__elevation']
 
-basin_mg.set_closed_boundaries_at_grid_edges(True, True, False, True)
-
+thickness = 200
 attrs = {'K_sp': {0: 0.0000005, 1: 0.00000001}}
 
-z0s = 200 * np.arange(-3, 3)
-z0s[-1] = z0s[-2] + 10
+z0s = thickness * np.arange(-5, 5)
 
-ids = np.tile([0, 1], 3)
+ids = np.tile([0, 1], 5)
 
-# z = ax + by + c
+# z = ax + by + c*0
 a=1
-b=0
-model = Litho_models(a,b,200)
-model.angle_between_plane_and_horizontal()
-model.calculate_surface_exposure()
-model.strike_plane()
-func_26d = lambda x, y: ((a * x) + (b * y))
+b=1
 
-lith = LithoLayers(basin_mg, z0s, ids, function=func_26d, attrs=attrs)
+model = Litho_models(a,b,thickness)
+an = model.angle_between_plane_and_horizontal()
+se = model.calculate_surface_exposure()
+sp = model.strike_plane()
 
-imshow_grid(basin_mg, 'rock_type__id', cmap='viridis')
+func_5d = lambda x, y: ((a * x) + (b * y))
+
+lith = LithoLayers(basin_mg, z0s, ids, function=func_5d, attrs=attrs)
+
+imshow_grid(basin_mg, 'rock_type__id', cmap='viridis',plot_name=f"Dip:{an: .2f} Outcrop:{se: .2f} Strike:{sp: .2f}")
 plt.show()
 
 # U = 0.00001
@@ -145,3 +135,6 @@ plt.show()
 #
 #         # Save the data
 #         np.savetxt(data_filename, basin_mg.at_node['topographic__elevation'])
+
+
+
