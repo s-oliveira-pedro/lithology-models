@@ -5,7 +5,7 @@ from landlab import RasterModelGrid, HexModelGrid
 from landlab.components import FlowAccumulator, FastscapeEroder
 from landlab.plot import imshow_grid
 
-output_dir = '/Users/poliveira/Library/CloudStorage/OneDrive-CityUniversityofNewYork/PhD_LIFE/PhD_2nd_Chapter/diff_model_equi'
+output_dir = '/Users/poliveira/Library/CloudStorage/OneDrive-CityUniversityofNewYork/PhD_LIFE/PhD_2nd_Chapter/diff_model_gris_ksp'
 os.makedirs(output_dir, exist_ok=True)
 
 dx= 25
@@ -19,8 +19,18 @@ z_hex = hex_mg.add_zeros('topographic__elevation', at='node')
 z_hex += np.random.rand(z_hex.size)
 
 raster_mg.set_watershed_boundary_condition_outlet_id(49, z_raster)
-hex_mg.set_watershed_boundary_condition_outlet_id(49, z_hex)
+hex_mg.set_watershed_boundary_condition_outlet_id(24, z_hex)
 
+k_sp1 = 1e-5
+k_sp2 = 1e-6
+
+K_sp_h = np.zeros(hex_mg.number_of_nodes)
+K_sp_h[np.where(hex_mg.y_of_node <= 250)[0]]= k_sp1
+K_sp_h[np.where(hex_mg.y_of_node > 250)[0]]=k_sp2
+
+K_sp_r = np.zeros(raster_mg.number_of_nodes)
+K_sp_r[np.where(raster_mg.y_of_node <= 250)[0]]= k_sp1
+K_sp_r[np.where(raster_mg.y_of_node > 250)[0]]=k_sp2
 
 Ur = np.ones(raster_mg.number_of_nodes)
 Uh = np.ones(hex_mg.number_of_nodes)
@@ -36,11 +46,11 @@ uplift_per_step_r = dt * Ur
 uplift_per_step_h = dt * Uh
 
 fa_r = FlowAccumulator(raster_mg, flow_director="D8", depression_finder="DepressionFinderAndRouter")
-sp_r = FastscapeEroder(raster_mg, K_sp=K_sp)
+sp_r = FastscapeEroder(raster_mg, K_sp=K_sp_r)
 
 fa_h = FlowAccumulator(hex_mg, flow_director='Steepest',
                      depression_finder='DepressionFinderAndRouter')
-sp_h = FastscapeEroder(hex_mg, K_sp=K_sp)
+sp_h = FastscapeEroder(hex_mg, K_sp=K_sp_h)
 
 for i in range(n_steps):
 

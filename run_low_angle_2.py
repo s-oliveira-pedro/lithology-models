@@ -253,4 +253,3 @@ for i in range(n_steps):
         np.savetxt(data_filename6, basin_mg3.at_node['K_sp'])
 
 
-
